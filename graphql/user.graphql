@@ -1,0 +1,37 @@
+extend type Query {
+    "Find a single user by an identifying attribute."
+    user(id: ID @eq, email: String @eq, name: String @eq): User @find
+
+    "List multiple users."
+    users: [User!]! @field (resolver: "Users@allUsers")
+
+    
+    changeRol(id: ID!,rol:String): User! @update
+  profile: User! @guard @auth
+}
+  extend type Mutation  @guard{ 
+    editUser(  
+        id: Int!,
+        name: String!,
+        email: String!,
+        password: String,
+        img_user: [Upload!]
+    ): User! @field (resolver: "EditUser@editUserAndImage")
+     
+    
+}
+type User {
+    "Unique primary key."
+    id: ID!
+
+    "Non-unique name."
+    name: String!
+
+    "Unique email address."
+    email: String!
+
+    "others columns"
+    password: String!
+    img_user: String
+    rol: String!
+}

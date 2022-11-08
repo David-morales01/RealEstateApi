@@ -1,0 +1,93 @@
+scalar Upload
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+type Query {
+    "List all Business_types"
+    business_types_all: [Businesstype!]! @all
+
+    "List all markers"
+    markers: [Marker!]! @all
+    images: [Image!]! @all
+
+    "List marker by id"
+    marker(id: ID @eq): Marker @find
+    filterMarkers(
+        bedroom: Int
+        bathdroom: Int
+        title: String
+        businessTypesId: [Int]
+        priceRange: [Int]
+    ): [Marker!] @field(resolver: "FilterMarker@filterMarkers")
+}
+#  input InputMarker {
+#      title: String!,
+#      description: String!,
+#     bedroom: Int!,
+#      bathdroom: Int!,
+#      price: Float!,
+#      lat: String!,
+#      business_types_id: Int!,
+#      long: String!,
+#      images:[Upload!]
+#  }
+
+"My first mutation :3"
+type Mutation @guard {
+    createMarker(
+        title: String!
+        description: String!
+        bedroom: Int!
+        bathdroom: Int!
+        price: Float!
+        lat: String!
+        business_types_id: Int!
+        long: String!
+        images: [Upload!]
+    ): Marker! @field(resolver: "CreateMarker@createMarkersAndImages")
+    # createMarker(
+    #     input: InputMarker @spread
+    # ): Marker! @field (resolver: "CreateMarker@createMarkersAndImages")
+
+    editMarker(
+        id: Int!
+        title: String!
+        description: String!
+        bedroom: Int!
+        bathdroom: Int!
+        price: Float!
+        lat: String!
+        business_types_id: Int!
+        long: String!
+        images: [Upload!]
+    ): Marker! @field(resolver: "EditMarker@editMarkersAndImages")
+
+    buyMarker(id: ID!, status: Boolean, owner_id: Int): Marker! @update
+
+    deleteImage(id: ID!): Image @delete
+}
+
+type Businesstype {
+    id: ID!
+    name: String!
+}
+
+type Image {
+    id: ID!
+    marker_id: Marker! @belongsTo
+    src_img: String
+}
+
+type Marker {
+    id: ID!
+    user_id: User! @belongsTo
+    title: String!
+    description: String!
+    bedroom: Int!
+    bathdroom: Int!
+    price: Float!
+    lat: String!
+    business_types_id: Businesstype! @belongsTo
+    long: String!
+    status: Boolean!
+    images: [Image] @hasMany
+    owner_id: User @belongsTo
+}
